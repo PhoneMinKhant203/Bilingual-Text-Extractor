@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bilingual Text Extractor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Bilingual Text Extractor</h1>
+        <p>Enter Burmese + English text to extract only English sentences</p>
+        
+        <div class="text-boxes">
+            <div class="text-box">
+                <h2>Input (Burmese + English)</h2>
+                <textarea id="inputText" placeholder="Enter bilingual text here..."></textarea>
+                <button id="extractBtn">Extract English</button>
+            </div>
+            
+            <div class="text-box">
+                <h2>English Only</h2>
+                <textarea id="outputText" readonly placeholder="English sentences will appear here..."></textarea>
+                <button id="copyBtn">Copy to Clipboard</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('extractBtn').addEventListener('click', async () => {
+            const inputText = document.getElementById('inputText').value.trim();
+            const outputText = document.getElementById('outputText');
+            
+            if (!inputText) {
+                alert('Please enter some text first');
+                return;
+            }
+            
+            outputText.value = "Processing...";
+            
+            try {
+                const response = await fetch('/extract', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: inputText })
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    outputText.value = `Error: ${data.error}`;
+                } else {
+                    outputText.value = data.english_text;
+                }
+            } catch (error) {
+                outputText.value = `Error: ${error.message}`;
+            }
+        });
+        
+        document.getElementById('copyBtn').addEventListener('click', () => {
+            const outputText = document.getElementById('outputText');
+            outputText.select();
+            document.execCommand('copy');
+            alert('Copied to clipboard!');
+        });
+    </script>
+</body>
+</html>
