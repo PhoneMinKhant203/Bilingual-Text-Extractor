@@ -27,7 +27,6 @@ Installation
 
 1. Clone the repository:
 git clone https://github.com/PhoneMinKhant203/Bilingual-Text-Extractor.git
-cd english-extractor
 
 2. Install the required Python packages:
 pip install -r requirements.txt
